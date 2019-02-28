@@ -50,6 +50,9 @@ allprojects {
   version = gitVersion()
   repositories {
     maven { url  "http://palantir.bintray.com/releases" }
+    maven {
+      url 'http://dynamodb-local.s3-website-us-west-2.amazonaws.com/release'
+    }
     mavenCentral()
     mavenLocal()
   }
@@ -139,9 +142,9 @@ task deploySite(type: Exec) {
 
 // We enable baseline-idea everywhere so that everyone can use IntelliJ to build code against the
 // Baseline style guide.
-def baselineProjects = [ project("iceberg-api"), project("iceberg-common"), project("iceberg-core"),
-                         project("iceberg-data"), project("iceberg-orc"), project("iceberg-spark"),
-                         project("iceberg-hive") ]
+def baselineProjects = [ project("iceberg-api"), project("iceberg-aws"), project("iceberg-common"),
+                         project("iceberg-core"), project("iceberg-data"), project("iceberg-orc"),
+                         project("iceberg-spark"), project("iceberg-hive") ]
 
 
 configure(subprojects - baselineProjects) {
@@ -209,6 +212,27 @@ project(':iceberg-api') {
   dependencies {
     testCompile "org.apache.avro:avro"
     testCompile 'joda-time:joda-time'
+  }
+}
+
+project(':iceberg-aws') {
+  repositories {
+    maven {
+      url 'http://dynamodb-local.s3-website-us-west-2.amazonaws.com/release'
+    }
+  }
+
+  dependencies {
+    compile project(':iceberg-core')
+
+    compileOnly "com.amazonaws:aws-java-sdk-dynamodb"
+    compileOnly("org.apache.hadoop:hadoop-common") {
+      exclude group: 'org.apache.avro', module: 'avro'
+      exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+      exclude group: 'javax.servlet'
+    }
+
+    testCompile "com.amazonaws:DynamoDBLocal"
   }
 }
 

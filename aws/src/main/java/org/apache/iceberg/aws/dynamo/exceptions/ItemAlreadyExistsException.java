@@ -17,28 +17,14 @@
  * under the License.
  */
 
-rootProject.name = 'iceberg'
-include 'api'
-include 'aws'
-include 'common'
-include 'core'
-include 'data'
-include 'orc'
-include 'parquet'
-include 'spark'
-include 'pig'
-include 'runtime'
-include 'hive'
+package org.apache.iceberg.aws.dynamo.exceptions;
 
-project(':api').name = 'iceberg-api'
-project(':aws').name = 'iceberg-aws'
-project(':common').name = 'iceberg-common'
-project(':core').name = 'iceberg-core'
-project(':data').name = 'iceberg-data'
-project(':orc').name = 'iceberg-orc'
-project(':parquet').name = 'iceberg-parquet'
-project(':spark').name = 'iceberg-spark'
-project(':pig').name = 'iceberg-pig'
-project(':runtime').name = 'iceberg-spark-runtime'
-project(':hive').name = 'iceberg-hive'
+public class ItemAlreadyExistsException extends RuntimeException {
+  public ItemAlreadyExistsException(String message, Object... args) {
+    super(String.format(message, args));
+  }
 
+  public ItemAlreadyExistsException(Throwable cause, String message, Object... args) {
+    super(String.format(message, args), cause);
+  }
+}
