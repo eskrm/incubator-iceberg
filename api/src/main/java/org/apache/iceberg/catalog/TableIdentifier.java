@@ -77,6 +77,6 @@ public class TableIdentifier {
   }
 
   public String toString() {
-    return namespace.toString() + "." + name;
+    return namespace.isEmpty() ? name : namespace.toString() + "." + name;
   }
 }
