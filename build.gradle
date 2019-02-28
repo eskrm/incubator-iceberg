@@ -73,6 +73,8 @@ subprojects {
 
   ext {
     jmhVersion = '1.21'
+
+    dynamoVersion = '1.11.505'
   }
 
   sourceCompatibility = '1.8'
@@ -196,6 +198,26 @@ project(':iceberg-api') {
   dependencies {
     testCompile "org.apache.avro:avro"
     testCompile 'joda-time:joda-time'
+  }
+}
+
+project(':iceberg-aws') {
+  repositories {
+    maven {
+      url 'http://dynamodb-local.s3-website-us-west-2.amazonaws.com/release'
+    }
+  }
+
+  dependencies {
+    compile project(':iceberg-core')
+
+    compileOnly "com.amazonaws:aws-java-sdk-dynamodb:$dynamoVersion"
+    compileOnly("org.apache.hadoop:hadoop-client:$hadoopVersion") {
+      exclude group: 'org.apache.avro', module: 'avro'
+      exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+    }
+
+    testCompile "com.amazonaws:DynamoDBLocal:1.11.0"
   }
 }
 
@@ -383,6 +405,7 @@ project(':iceberg-runtime') {
 
   dependencies {
     shadow project(':iceberg-api')
+    shadow project(':iceberg-aws')
     shadow project(':iceberg-common')
     shadow project(':iceberg-core')
     shadow project(':iceberg-parquet')

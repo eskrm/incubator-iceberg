@@ -20,13 +20,16 @@
 package org.apache.iceberg;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableMap;
+import java.util.List;
 import java.util.Map;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.iceberg.exceptions.AlreadyExistsException;
 import org.apache.iceberg.exceptions.NoSuchTableException;
 
 public abstract class BaseMetastoreTables implements Tables {
+  private static final Splitter DOT = Splitter.on('.').limit(2);
   private final Configuration conf;
 
   public BaseMetastoreTables(Configuration conf) {
@@ -65,6 +68,29 @@ public abstract class BaseMetastoreTables implements Tables {
     ops.commit(null, metadata);
 
     return new BaseTable(ops, database + "." + table);
+  }
+
+  @Override
+  public Table create(Schema schema, String tableIdentifier) {
+    return create(schema, PartitionSpec.unpartitioned(), tableIdentifier);
+  }
+
+  @Override
+  public Table create(Schema schema, PartitionSpec spec, Map<String, String> properties, String tableIdentifier) {
+    List<String> parts = DOT.splitToList(tableIdentifier);
+    if (parts.size() == 2) {
+      return create(schema, spec, properties, parts.get(0), parts.get(1));
+    }
+    throw new UnsupportedOperationException("Could not parse table identifier: " + tableIdentifier);
+  }
+
+  @Override
+  public Table load(String tableIdentifier) {
+    List<String> parts = DOT.splitToList(tableIdentifier);
+    if (parts.size() == 2) {
+      return load(parts.get(0), parts.get(1));
+    }
+    throw new UnsupportedOperationException("Could not parse table identifier: " + tableIdentifier);
   }
 
   public Transaction beginCreate(Schema schema, PartitionSpec spec, String database, String table) {

@@ -19,6 +19,7 @@
 
 rootProject.name = 'iceberg'
 include 'api'
+include 'aws'
 include 'common'
 include 'core'
 include 'data'
@@ -31,6 +32,7 @@ include 'hive'
 include 'presto-runtime'
 
 project(':api').name = 'iceberg-api'
+project(':aws').name = 'iceberg-aws'
 project(':common').name = 'iceberg-common'
 project(':core').name = 'iceberg-core'
 project(':data').name = 'iceberg-data'
@@ -41,5 +43,4 @@ project(':pig').name = 'iceberg-pig'
 project(':runtime').name = 'iceberg-runtime'
 project(':hive').name = 'iceberg-hive'
 project(':presto-runtime').name = 'iceberg-presto-runtime'
-
 

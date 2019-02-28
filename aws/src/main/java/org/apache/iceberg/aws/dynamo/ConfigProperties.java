@@ -17,28 +17,21 @@
  * under the License.
  */
 
-package org.apache.iceberg.hive;
+package org.apache.iceberg.aws.dynamo;
 
-import java.io.Closeable;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig.ConsistentReads;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.iceberg.BaseMetastoreTableOperations;
-import org.apache.iceberg.BaseMetastoreTables;
 
-public class HiveTables extends BaseMetastoreTables implements Closeable {
-  private final HiveClientPool clients;
+public class ConfigProperties {
+  public static final String DYNAMO_TABLE = "iceberg.dynamo.table";
+  public static final String DYNAMO_REGION = "iceberg.dynamo.region";
+  public static final String DYNAMO_ENDPOINT = "iceberg.dynamo.endpoint";
+  public static final String DYNAMO_CONSISTENT_READS = "iceberg.dynamo.consistent-reads";
 
-  public HiveTables(Configuration conf) {
-    super(conf);
-    this.clients = new HiveClientPool(2, conf);
-  }
+  public static final boolean DYNAMO_CONSISTENT_READS_DEFAULT = false;
 
-  @Override
-  public BaseMetastoreTableOperations newTableOps(Configuration conf, String database, String table) {
-    return new HiveTableOperations(conf, clients, database, table);
-  }
-
-  @Override
-  public void close() {
-    clients.close();
+  public static ConsistentReads getReadConsistency(Configuration conf) {
+    boolean consistentReads = conf.getBoolean(DYNAMO_CONSISTENT_READS, DYNAMO_CONSISTENT_READS_DEFAULT);
+    return (consistentReads ? ConsistentReads.CONSISTENT : ConsistentReads.EVENTUAL);
   }
 }
